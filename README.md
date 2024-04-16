@@ -4,6 +4,8 @@
 
 - **模型效果展示**：[点击查看](https://huggingface.co/spaces/bingshuang21/BM-Transformer)
 
+如遇到huggingface无法正常显示，可能是网络原因，请稍等一段时间重新访问或更换浏览器访问
+
 - **模型下载链接**：[Google Drive](https://drive.google.com/file/d/1HdGrn1PsusQZxS69zOX6w-8_WHFtSXQ6/view?usp=drive_link)
 
 ## 数据集准备
