@@ -429,12 +429,31 @@ preset_event2word = {
         'a#'        : 27,
         'b'         : 28,
 
-        'Pop'       : 29,
-        'Rock'      : 30,
-        'Country'   : 31,
-        'Electronic': 32,
-        'Metal'     : 33,
+        'classic'   : 29,
+        'country'   : 30,
+        'dance'     : 31,
+        'electronic': 32,
+        'pop'       : 33,
+        'rock'      : 34,
 
+        # 'happy': 29,
+        # 'sad': 30,
+
+        # 'Rock':         29,
+        # 'Rap':          30,
+        # 'Latin':        31,
+        # 'Jazz':         32,
+        # 'Electronic':   33,
+        # 'Punk':         34,
+        # 'Pop':          35,
+        # 'New Age':      36,
+        # 'Metal':        37,
+        # 'RnB':          38,
+        # 'Country':      39,
+        # 'Reggae':       40,
+        # 'Folk':         41,
+        # 'Blues':        42,
+        # 'World':        43
     },
     "pitch"     : {
         0               : 0,
@@ -1913,60 +1932,4 @@ preset_word2event = {
         24: 'a#',
         25: 'b',
     }
-}
-
-init_dictionary = {
-    "instr_type": {
-        'None'   : 0,
-        'Drums'  : 1,
-        'Piano'  : 2,
-        'Guitar' : 3,
-        'Bass'   : 4,
-        'Strings': 5,
-    },
-    "key"       : {
-        "None": 0,
-        'C'   : 1,
-        'C#'  : 2,
-        'D'   : 3,
-        'D#'  : 4,
-        'E'   : 5,
-        'F'   : 6,
-        'F#'  : 7,
-        'G'   : 8,
-        'G#'  : 9,
-        'A'   : 10,
-        'A#'  : 11,
-        'B'   : 12,
-        'c'   : 13,
-        'c#'  : 14,
-        'd'   : 15,
-        'd#'  : 16,
-        'e'   : 17,
-        'f'   : 18,
-        'f#'  : 19,
-        'g'   : 20,
-        'g#'  : 21,
-        'a'   : 22,
-        'a#'  : 23,
-        'b'   : 24,
-    },
-    "genre"     : {
-        "None"      : 0,
-        'Metal'     : 1,
-        'Country'   : 2,
-        'dance'     : 3,
-        'Electronic': 4,
-        'Pop'       : 5,
-        'Rock'      : 6,
-    }
-}
-
-genre = {
-    'Metal'     : 1,
-    'Country'   : 2,
-    'dance'     : 3,
-    'Electronic': 4,
-    'Pop'       : 5,
-    'Rock'      : 6,
 }

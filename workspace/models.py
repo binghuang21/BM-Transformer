@@ -87,8 +87,6 @@ class TransformerModel(nn.Module):
         self.word_emb_pitch     = Embeddings(self.n_token[4], self.emb_sizes[4])
         self.word_emb_duration  = Embeddings(self.n_token[5], self.emb_sizes[5])
         self.word_emb_velocity  = Embeddings(self.n_token[6], self.emb_sizes[6])
-
-        # self.word_emb_emotion = Embeddings(self.n_token[7], self.emb_sizes[7])
         self.word_emb_strength = Embeddings(self.n_token[7], self.emb_sizes[7])
         self.word_emb_density = Embeddings(self.n_token[8], self.emb_sizes[8])
         self.word_emb_time = Embeddings(self.n_token[9], self.emb_sizes[9])
@@ -123,8 +121,6 @@ class TransformerModel(nn.Module):
         self.proj_pitch    = nn.Linear(self.d_model, self.n_token[4])
         self.proj_duration = nn.Linear(self.d_model, self.n_token[5])
         self.proj_velocity = nn.Linear(self.d_model, self.n_token[6])
-
-        # self.proj_emotion = nn.Linear(self.d_model, self.n_token[7])
         self.proj_strength = nn.Linear(self.d_model, self.n_token[7])
         self.proj_density = nn.Linear(self.d_model, self.n_token[8])
         self.proj_time = nn.Linear(self.d_model, self.n_token[9])
@@ -258,7 +254,6 @@ class TransformerModel(nn.Module):
 
         emb_time = self.word_emb_time(x[..., 9].clip(max=self.n_token[9] - 1))
         emb_emotion = self.word_emb_emotion(x[..., 10].clip(max=self.n_token[10] - 1))
-        # emb_emotion = self.word_emb_emotion(x[..., 7].clip(max=self.n_token[7] - 1))
 
         if len(self.n_token) == 9:
             emb_key = self.word_emb_key(x[..., 8])
@@ -297,7 +292,7 @@ class TransformerModel(nn.Module):
 
 
         emb_linear = self.in_linear(embs)
-        pos_emb = self.pos_emb(emb_linear)    # mei you time_encoding
+        pos_emb = self.pos_emb(emb_linear)
         
         
         # assert False
@@ -318,9 +313,7 @@ class TransformerModel(nn.Module):
 
         else:
             pos_emb = pos_emb.squeeze(0)
-            
-            # self.get_encoder('autoregred')
-            # self.transformer_encoder.cuda()
+
             h, memory = self.transformer_encoder(pos_emb, memory=memory) # y: s x d_model
             
             # project type
@@ -333,13 +326,12 @@ class TransformerModel(nn.Module):
         '''
         for training
         '''
-        # tf_skip_emption = self.word_emb_emotion(y[..., 7])
         tf_skip_type = self.word_emb_type(y[..., 3])
 
-        emo_embd = h[:, 0]    # fixme kan you mei you wen ti
+        emo_embd = h[:, 0]
         
         # project other
-        y_concat_type = torch.cat([h, tf_skip_type], dim=-1)    # qian 3 hang shi dou you de
+        y_concat_type = torch.cat([h, tf_skip_type], dim=-1)
         y_  = self.project_concat_type(y_concat_type)
 
         y_tempo    = self.proj_tempo(y_)
@@ -396,7 +388,7 @@ class TransformerModel(nn.Module):
         y_pitch    = self.proj_pitch(y_)
         y_duration = self.proj_duration(y_)
         y_velocity = self.proj_velocity(y_)
-        y_strength = self.proj_strength(y_)    # fixme zhe liang ge shi shou kong sheng cheng
+        y_strength = self.proj_strength(y_)
         y_density = self.proj_density(y_)
         y_time = self.proj_time(y_)
         y_emotion = self.proj_emotion(y_)
@@ -410,11 +402,9 @@ class TransformerModel(nn.Module):
         cur_word_pitch =    sampling(y_pitch, p=0.9, is_training=is_training)
         cur_word_duration = sampling(y_duration, t=2, p=0.9, is_training=is_training)
         cur_word_velocity = sampling(y_velocity, t=5, is_training=is_training)
-        cur_word_strength = sampling(y_strength, p=0.9, is_training=is_training)  # fixme fei shou kong sheng cheng
+        cur_word_strength = sampling(y_strength, p=0.9, is_training=is_training)
         cur_word_density = sampling(y_density, p=0.9, is_training=is_training)
         cur_word_time = sampling(y_time, t=2, p=0.9, is_training=is_training)
-        # cur_word_strength = sampling(y_strength, t=2, p=0.9, is_training=is_training)  # fixme fei shou kong sheng cheng
-        # cur_word_density = sampling(y_density, t=5, is_training=is_training)
 
         if len(self.n_token) == 9:
             y_key = self.proj_key(y_)
@@ -438,7 +428,7 @@ class TransformerModel(nn.Module):
                 cur_word_pitch,
                 cur_word_duration,
                 cur_word_velocity,
-                cur_word_strength,   # fixme fei shou kong sheng cheng
+                cur_word_strength,
                 cur_word_density,
                 cur_word_time
             ]
@@ -496,19 +486,19 @@ class TransformerModel(nn.Module):
             
         return next_arr, y_emotion
 
-    def find_bar(self, bar_num, video_npz=None):  # fan hui dang qian bar de p_time
+    def find_bar(self, bar_num, video_npz=None):
         for i in range(len(video_npz)):
             if video_npz[i][1] == bar_num:
                 p_time_bar = video_npz[i][5]
                 if (i + 1 < len(video_npz)) and video_npz[i + 1][1] == bar_num:
-                    density_id = (i + 1)  # ji lu density de xu lie hao
+                    density_id = (i + 1)
                 else:
-                    density_id = 0  # biao shi mei you ke yi ti huan de
+                    density_id = 0
                 break
         return p_time_bar, density_id
 
 
-    def inference_from_scratch(self, dictionary, emotion_tag, key_tag=None, n_token=11, display=False, video_npz=None):    # fixme zeng jia token jiu yao geng gai
+    def inference_from_scratch(self, dictionary, emotion_tag, key_tag=None, n_token=11, display=True, video_npz=None):
         event2word, word2event = dictionary
         
 
@@ -519,9 +509,9 @@ class TransformerModel(nn.Module):
             
             result = [word2event[k][cp[idx]] for idx, k in enumerate(classes)]
 
-            # for r in result:
-            #     print('{:15s}'.format(str(r)), end=' | ')
-            # print('')
+            for r in result:
+                print('{:15s}'.format(str(r)), end=' | ')
+            print('')
 
 
         
@@ -565,7 +555,6 @@ class TransformerModel(nn.Module):
             h = None
             
             cnt_bar = 0
-            print("init.dtype:",init.dtype)
             init_t = torch.from_numpy(init).long().cuda()
             print('------ initiate ------')
 
@@ -613,7 +602,7 @@ class TransformerModel(nn.Module):
                     h, y_type, memory = self.forward_hidden(
                             input_, memory, is_training=False)
 
-                density_id = 1    # shang lai jiu shi di yi ge xiao jie de kong zhi
+                density_id = 1
                     
 
             
@@ -625,24 +614,22 @@ class TransformerModel(nn.Module):
                     return None, None
 
                 # geng huan tempo
-                if next_arr[3] == 2 and next_arr[0] > 1:    # ru guo shi Metrical lei, qie shi tempo
-                    next_arr[0] = video_npz[0][0]    # tempo gai wei she zhi de tempo
+                if next_arr[3] == 2 and next_arr[0] > 1:
+                    next_arr[0] = video_npz[0][0]
 
                 # jia ru p_time
                 if word2event['bar-beat'][next_arr[2]] == 'Bar':    # Metrical lei, qie shi bar
                     if cnt_bar < video_npz[-1][1]:
                         cnt_bar += 1
                         next_arr[9], density_id = self.find_bar(cnt_bar, video_npz=video_npz)
-                        # fixme jia ru ni yin mi du ni yin qiang du kong zhi
                     else:
                         next_arr = [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
                         final_res.append(next_arr)
                         break
 
-                # if density_id != 0:    # you ni yin mi du
                 if next_arr[3] == 4:    # type = Rhythm
                     if next_arr[8] != 0:    # shi density
-                        if video_npz[density_id][4] != 0:    # dang density kong zhi bu shi 0 de shi hou
+                        if video_npz[density_id][4] != 0:
                             next_arr[8] = video_npz[density_id][4]
                             next_arr[9] = video_npz[density_id][5]
                             strength_id = density_id + 1
@@ -663,25 +650,15 @@ class TransformerModel(nn.Module):
                     print_word_cp(next_arr)
                 
                 # forward
-                input_ = torch.from_numpy(next_arr).long().cuda()    # zhi ba shang yi ge de shu chu zuo wei shu ru lai sheng cheng
+                input_ = torch.from_numpy(next_arr).long().cuda()
                 input_  = input_.unsqueeze(0).unsqueeze(0)
                 h, y_type, memory = self.forward_hidden(
                     input_, memory, is_training=False)
-
-                # # you ni yin mi du
-                # if density_id != 0:
-                #     note_density = video_npz[density_id][4]
-                #
-                #     print('jia ru ni yin kong zhi')
-                #     # fixme jia ru ni yin kong zhi
 
 
                 # end of sequence
                 if word2event['type'][next_arr[3]] == 'EOS':
                     break
-                
-                # if word2event['bar-beat'][next_arr[2]] == 'Bar':
-                #     cnt_bar += 1
 
         print('\n--------[Done]--------')
         final_res = np.concatenate(final_res)
