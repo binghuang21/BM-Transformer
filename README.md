@@ -63,6 +63,10 @@ python main_cp.py
 
 此平台基于BMT开发，简化了为视频创作背景音乐的流程。更多信息和操作指南，请参阅下方链接：[用户友好型背景音乐配乐平台GitHub存储库](https://github.com/binghuang21/soundtrack-platform.git)
 
+## 使用授权
+
+此项目仅供学习使用，已申请软件著作权，商用需联系作者授权。
+
 <!-- # **面向丰富曲调要素的影视配乐生成模型**
 
 为展示模型效果，本文在 Hugging face 上构建了结果对比网页，可见：https://huggingface.co/spaces/bingshuang21/BM-Transformer
